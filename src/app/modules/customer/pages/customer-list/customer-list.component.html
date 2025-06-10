@@ -1,0 +1,39 @@
+<div class="container my-5">
+  <div class="table-wrapper">
+    <div class="table-title">
+      <div class="row">
+        <div class="col-sm-8">
+          <h2 class="mb-4"><b>Lista</b> Clientes</h2>
+        </div>
+        <div class="col-sm-4">
+          <a routerLink="/customer/create" class="btn btn-primary">Añadir nuevo cliente</a>
+        </div>
+        <hr>
+      </div>
+    </div>
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Correo</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+         <!-- Iteramos sobre el arreglo de clientes obtenido desde la API -->
+        <tr *ngFor="let customer of customers">
+          <td>{{ customer.nombre }}</td>
+          <td>{{ customer.correo }}</td>
+          <td>
+            <a class="edit" title="Edit" data-toggle="tooltip">
+              <i class="material-icons">edit</i>
+            </a>
+            <a class="delete" title="Delete" data-toggle="tooltip">
+              <i class="material-icons">delete</i>
+            </a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
