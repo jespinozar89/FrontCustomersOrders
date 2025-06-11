@@ -1,0 +1,18 @@
+<div class="input-group mb-3">
+  <input type="text"
+         class="form-control"
+         [(ngModel)]="customerName"
+         (keydown.enter)="searchCustomer()"
+         placeholder="Buscar cliente por nombre"
+         aria-label="customerByName"
+         aria-describedby="button-addon2">
+  <button class="btn btn-outline-primary"
+          type="button" id="button-addon1"
+          (click)="searchCustomer()">Buscar</button>
+  <button class="btn btn-outline-primary"
+          type="button" id="button-addon2"
+          (click)="clearSearch()">Limpiar</button>
+</div>
+<div *ngIf="noData" class="alert alert-warning" role="alert">
+  no se encontraron resultados.
+</div>

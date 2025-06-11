@@ -474,7 +474,7 @@ Ahora integra el servicio en el componente que muestra la lista de clientes.
 
 Abre el archivo `modules/customer/pages/customer-list/customer-list.component.ts` y realiza las siguientes modificaciones:
 
-**1. Importa el servicio y la interfaz desde la nueva ubicación:**
+- **1. Importa el servicio y la interfaz desde la nueva ubicación:**
 
 ```bash
 import { Component } from '@angular/core';
@@ -482,7 +482,7 @@ import { Customer } from 'src/app/core/models/customer.model';
 import { CustomerService } from 'src/app/core/services/customer.service';
 ```
 
-**2. Inyecta el servicio en el constructor e implementa ngOnInit():**
+- **2. Inyecta el servicio en el constructor e implementa ngOnInit():**
 
 ```bash
 @Component({
@@ -558,7 +558,7 @@ Modifica el contenido de `customer-list.component.html` para iterar sobre el arr
   </div>
 </div>
 ```
-**3. Probar la aplicación**
+**c) Probar la aplicación**
 
   - Asegúrate de que tu API .NET 8 esté corriendo en la URL definida en el  servicio.
 
@@ -566,6 +566,191 @@ Modifica el contenido de `customer-list.component.html` para iterar sobre el arr
 
   - Navega a la ruta correspondiente para visualizar el componente **customer-list** y confirma que la tabla se llena correctamente con los datos obtenidos desde la API.
 
+## Crear Componentes Hijos
+
+Los **componentes hijos** son piezas reutilizables que se integran dentro de un componente padre. Son útiles para dividir la lógica en partes más pequeñas y manejables, y permiten la comunicación entre componentes mediante propiedades y eventos.
+
+**Estructura Recomendada**
+
+Los componentes hijos deben crearse dentro de la carpeta **components** del módulo correspondiente.
+Ejemplo de ruta: `modules/customer/components/`.
+
+Crear Componente Hijo
+```bash
+ng g component modules/customer/components/customer-list-by-name
+```
+**Integrar Componente Hijo en el Padre**
+
+Para usar el componente hijo dentro del componente padre, simplemente utiliza su selector HTML dentro de la plantilla del padre:
+
+```bash
+<div class="row">
+  <div class="col-sm-12">
+    <app-customer-list-by-name></app-customer-list-by-name>
+  </div>
+</div>
+```
+
+**Comunicación: Hijo → Padre**
+
+Para enviar datos desde el componente hijo al padre, se utiliza un **@Output()** con un **EventEmitter**.
+
+**Código del Componente Hijo** (`customer-list-by-name.component.ts`)
+
+```bash
+import { Component, EventEmitter, Output } from '@angular/core';
+import { CustomerService } from 'src/app/core/services/customer.service';
+import { Customer } from 'src/app/core/models/customer.model';
+
+@Component({
+  selector: 'app-customer-list-by-name',
+  templateUrl: './customer-list-by-name.component.html',
+  styleUrls: ['./customer-list-by-name.component.css']
+})
+export class CustomerListByNameComponent {
+  customerName: string = '';
+
+  // Se declara un EventEmitter que emitirá los resultados de la búsqueda.
+  // Usamos (Customer | null) para poder emitir null cuando se limpie la búsqueda.
+  @Output() searchResult = new EventEmitter<Customer | null>();
+
+  constructor(private customerService: CustomerService) {}
+
+  searchCustomer(): void {
+    if (!this.customerName.trim()) {
+      console.warn('Debes ingresar un nombre válido');
+      return;
+    }
+
+    this.customerService.getCustomerByName(this.customerName).subscribe({
+      next: (data: Customer) => {
+        console.log('Cliente encontrado:', data);
+        // Emitimos el cliente encontrado para que el padre lo reciba.
+        this.searchResult.emit(data);
+      },
+      error: (err) => {
+        console.error('Error al buscar cliente:', err);
+        // Podemos emitir null o notificar el error de otra forma
+        this.searchResult.emit(null);
+      }
+    });
+  }
+
+  clearSearch(): void {
+    this.customerName = '';
+    // Al limpiar, emitimos null para que el padre recargue la lista original.
+    this.searchResult.emit(null);
+  }
+}
+```
+
+**Template HTML del Componente Hijo** (`customer-list-by-name.component.html`)
+
+```bash
+<div class="input-group mb-3">
+  <input type="text"
+         class="form-control"
+         [(ngModel)]="customerName"
+         (keydown.enter)="searchCustomer()"
+         placeholder="Buscar cliente por nombre"
+         aria-label="customerByName"
+         aria-describedby="button-addon2">
+  <button class="btn btn-outline-primary" type="button" (click)="searchCustomer()">Buscar</button>
+  <button class="btn btn-outline-primary" type="button" (click)="clearSearch()">Limpiar</button>
+</div>
+```
+**Manejo en el Componente Padre**
+
+El componente padre debe declarar un método que reciba el resultado emitido por el hijo.
+
+**Código del Componente Padre** (`customer-list.component.ts`)
+
+```bash
+import { Component, OnInit } from '@angular/core';
+import { CustomerService } from 'src/app/core/services/customer.service';
+import { Customer } from 'src/app/core/models/customer.model';
+
+@Component({
+  selector: 'app-customer-list',
+  templateUrl: './customer-list.component.html',
+  styleUrls: ['./customer-list.component.css']
+})
+export class CustomerListComponent implements OnInit {
+  customers: Customer[] = [];
+
+  constructor(private customerService: CustomerService) {}
+
+  ngOnInit(): void {
+    this.loadCustomers();
+  }
+
+  loadCustomers(): void {
+    this.customerService.getCustomers().subscribe({
+      next: (data: Customer[]) => this.customers = data,
+      error: (err) => console.error('Error al cargar clientes:', err)
+    });
+  }
+
+  // Este método se llamará desde el hijo mediante el EventEmitter
+  handleSearch(searchData: Customer | null): void {
+    if (searchData) {
+      this.customers = [searchData];
+    } else {
+      this.loadCustomers();
+    }
+  }
+}
+```
+
+**Integrar Todo en la Vista del Padre**
+
+En el archivo HTML del componente padre (`customer-list.component.html`), enlaza el evento **searchResult**:
+
+```bash
+<div class="container my-5">
+  <div class="table-wrapper">
+    <div class="table-title">
+      <div class="row">
+        <div class="col-sm-8">
+          <h2 class="mb-4"><b>Lista</b> Clientes</h2>
+        </div>
+        <div class="col-sm-4">
+          <a routerLink="/customer/create" class="btn btn-outline-primary">Añadir nuevo cliente</a>
+        </div>
+      </div>
+      <hr>
+    </div>
+
+    <!-- Componente hijo -->
+    <div class="row">
+      <div class="col-sm-12">
+        <app-customer-list-by-name (searchResult)="handleSearch($event)"></app-customer-list-by-name>
+      </div>
+    </div>
+
+    <!-- Tabla de clientes -->
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Correo</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let customer of customers">
+          <td>{{ customer.nombre }}</td>
+          <td>{{ customer.correo }}</td>
+          <td>
+            <a class="edit" title="Editar"><i class="material-icons">edit</i></a>
+            <a class="delete" title="Eliminar"><i class="material-icons">delete</i></a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+```
 
 ## Servidor de desarrollo
 

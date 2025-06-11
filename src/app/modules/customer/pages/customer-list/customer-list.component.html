@@ -6,9 +6,14 @@
           <h2 class="mb-4"><b>Lista</b> Clientes</h2>
         </div>
         <div class="col-sm-4">
-          <a routerLink="/customer/create" class="btn btn-primary">Añadir nuevo cliente</a>
+          <a routerLink="/customer/create" class="btn btn-outline-primary">Añadir nuevo cliente</a>
         </div>
         <hr>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-12">
+        <app-customer-list-by-name (searchResult)="handleSearch($event)" ></app-customer-list-by-name>
       </div>
     </div>
     <table class="table table-bordered">

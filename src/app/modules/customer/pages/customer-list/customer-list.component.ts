@@ -28,4 +28,13 @@ export class CustomerListComponent {
     });
   }
 
+  handleSearch(searchData: Customer | null): void {
+    if (searchData) {
+      this.customers = [searchData];
+    } else {
+      this.loadCustomers();
+    }
+  }
+
+
 }

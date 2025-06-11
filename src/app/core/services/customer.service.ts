@@ -24,4 +24,24 @@ export class CustomerService {
     );
   }
 
+  getCustomerById(id: number): Observable<Customer> {
+    return this.http.get<any>(`${this.apiURL}/${id}`).pipe(
+      map((item) => ({
+        id: item.CUSTOMER_ID,
+        nombre: item.FULL_NAME,
+        correo: item.EMAIL_ADDRESS
+      }))
+    );
+  }
+
+  getCustomerByName(name: string): Observable<Customer> {
+    return this.http.get<any>(`${this.apiURL}/name/${name}`).pipe(
+      map((item) => ({
+        id: item.CUSTOMER_ID,
+        nombre: item.FULL_NAME,
+        correo: item.EMAIL_ADDRESS
+      }))
+    );
+  }
+
 }
