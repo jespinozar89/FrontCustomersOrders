@@ -44,4 +44,17 @@ export class CustomerService {
     );
   }
 
+  createCustomer(customer: Customer): Observable<Customer> {
+    return this.http.post<any>(this.apiURL, {
+      FullName: customer.nombre,
+      EmailAddress: customer.correo
+    }).pipe(
+      map((item) => ({
+        id: item.CUSTOMER_ID,
+        nombre: item.FULL_NAME,
+        correo: item.EMAIL_ADDRESS
+      }))
+    );
+  }
+
 }
