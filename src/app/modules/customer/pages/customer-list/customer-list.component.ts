@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { Customer } from 'src/app/core/models/customer.model';
 import { CustomerService } from 'src/app/core/services/customer.service';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { CustomerModalComponent } from '../../components/customer-modal/customer-modal.component';
 
 @Component({
   selector: 'app-customer-list',
@@ -11,7 +13,10 @@ export class CustomerListComponent {
 
    customers: Customer[] = [];
 
-  constructor(private customerService: CustomerService) { }
+  constructor(
+    private customerService: CustomerService,
+    private modalService: NgbModal
+  ) { }
 
   ngOnInit(): void {
     this.loadCustomers();
@@ -34,6 +39,24 @@ export class CustomerListComponent {
     } else {
       this.loadCustomers();
     }
+  }
+
+
+
+  openCustomerModal(customer?: Customer): void {
+    // Abre el modal usando el componente CustomerModalComponent
+    const modalRef = this.modalService.open(CustomerModalComponent, { backdrop: 'static', size: 'lg' });
+
+    // Configura el título según si es creación o edición
+    modalRef.componentInstance.title = customer ? 'Editar Cliente' : 'Crear Cliente';
+
+    // Pasa el cliente al modal (en modo edición) o null (en modo creación)
+    modalRef.componentInstance.customer = customer || null;
+
+    modalRef.componentInstance.cancel.subscribe(() => {
+      this.loadCustomers();
+      modalRef.dismiss();
+    });
   }
 
 

@@ -7,6 +7,7 @@ import { CustomerListByNameComponent } from './components/customer-list-by-name/
 import { FormsModule } from '@angular/forms';
 import { CustomerFormComponent } from './components/customer-form/customer-form.component';
 import { CustomerCreateComponent } from './pages/customer-create/customer-create.component';
+import { CustomerModalComponent } from './components/customer-modal/customer-modal.component';
 
 
 @NgModule({
@@ -14,7 +15,8 @@ import { CustomerCreateComponent } from './pages/customer-create/customer-create
     CustomerListComponent,
     CustomerListByNameComponent,
     CustomerFormComponent,
-    CustomerCreateComponent
+    CustomerCreateComponent,
+    CustomerModalComponent
   ],
   imports: [
     CommonModule,
