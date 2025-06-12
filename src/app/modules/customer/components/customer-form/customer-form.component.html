@@ -1,22 +1,14 @@
-  <div class="input-group mb-3">
-      <input
-        type="text"
-        class="form-control"
-        placeholder="Nombre Cliente"
-        aria-label="Customername"
-        [(ngModel)]="customerForm.nombre"
-      />
-      <span class="input-group-text">&#64;</span>
-      <input
-        type="text"
-        class="form-control"
-        placeholder="Correo Cliente"
-        aria-label="CustomerEmail"
-        [(ngModel)]="customerForm.correo"
-      />
-      <button
-        class="btn btn-outline-primary"
-        type="button"
-        id="button-addon2"
-        (click)="saveCustomer()">Guardar</button>
-    </div>
+<div class="input-group mb-3">
+  <input type="text" class="form-control" placeholder="Nombre Cliente" aria-label="Customername"
+    [(ngModel)]="customerForm.nombre" />
+  <span class="input-group-text">&#64;</span>
+  <input type="text" class="form-control" placeholder="Correo Cliente" aria-label="CustomerEmail"
+    [(ngModel)]="customerForm.correo" />
+  <button class="btn btn-outline-primary" type="button" id="button-addon2" (click)="saveCustomer()">Guardar</button>
+</div>
+<div *ngIf="noDataWarn" class="alert alert-warning" role="alert">
+  {{menssage}}
+</div>
+<div *ngIf="noDataSuccess" class="alert alert-success" role="alert">
+  {{menssage}}
+</div>
